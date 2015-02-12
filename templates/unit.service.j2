@@ -36,10 +36,12 @@ ExecStartPre=-{{ fleet_docker_cmd }} kill {{ item.container_name }}
 ExecStartPre=-{{ fleet_docker_cmd }} rm {{ item.container_name }}
 {% if item.registry_hostname is defined and item.registry_port is defined %}
 ExecStartPre={{ fleet_docker_cmd }} pull {{ item.registry_hostname }}:{{ item.registry_port }}/{{ item.image_owner }}/{{ item.image_name }}
+ExecStart={{ fleet_docker_cmd }} run --name {{ item.container_name }} {% if item.run_options is defined %}{{ item.run_options }}{% endif %} {{ item.registry_hostname }}:{{ item.registry_port }}/{{ item.image_owner }}/{{ item.image_name }} {% if item.run_args is defined %}{{ item.run_args }}{% endif %}
 {% else %}
 ExecStartPre={{ fleet_docker_cmd }} pull {{ item.image_owner }}/{{ item.image_name }}
-{% endif %}
 ExecStart={{ fleet_docker_cmd }} run --name {{ item.container_name }} {% if item.run_options is defined %}{{ item.run_options }}{% endif %} {{ item.image_owner }}/{{ item.image_name }} {% if item.run_args is defined %}{{ item.run_args }}{% endif %}
+{% endif %}
+
 
 ExecStop={{ fleet_docker_cmd }} stop {{ item.container_name }}
 {% else %}
