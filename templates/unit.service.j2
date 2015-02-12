@@ -1,0 +1,59 @@
+[Unit]
+Description={{ item.description }}
+
+# Requirements
+{% for req in item.requires|default( fleet_default_required_services  ) %}
+Requires={{ req }}
+{% endfor %}
+
+# Dependency ordering
+{% for dep in item.after|default( fleet_default_required_services ) %}
+After={{ dep }}
+{% endfor %}
+{% for dep in item.before|default( fleet_default_required_services ) %}
+Before={{ dep }}
+{% endfor %}
+{% if item.bindsto is defined %}
+{% for bind in item.bindsto %}
+BindsTo={{ bind }}
+{% endfor %}
+{% endif %}
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+## Directives with "=-" are allowed to fail without consequence
+{% if item.container_name is defined %}
+ExecStartPre=-{{ fleet_docker_cmd }} kill {{ item.container_name }}
+ExecStartPre=-{{ fleet_docker_cmd }} rm {{ item.container_name }}
+{% if item.registry_hostname is defined and item.registry_port is defined %}
+ExecStartPre={{ fleet_docker_cmd }} pull {{ item.registry_hostname }}:{{ item.registry_port }}/{{ item.image_owner }}/{{ item.image_name }}
+{% else %}
+ExecStartPre={{ fleet_docker_cmd }} pull {{ item.image_owner }}/{{ item.image_name }}
+{% endif %}
+ExecStart={{ fleet_docker_cmd }} run --name {{ item.container_name }} {% if item.run_options is defined %}{{ item.run_options }}{% endif %} {{ item.image_owner }}/{{ item.image_name }} {% if item.run_args is defined %}{{ item.run_args }}{% endif %}
+
+ExecStop={{ fleet_docker_cmd }} stop {{ item.container_name }}
+{% else %}
+ExecStart={{ item.start }}
+
+ExecStop={{ item.stop }}
+{% endif %}
+
+[X-Fleet]
+{% if item.conflicts is defined %}
+{% for conflict in item.conflicts %}
+X-Conflicts={{ conflict }}
+{% endfor %}
+{% endif %}
+{% if item.machineof is defined %}
+MachineOf={{ item.machineof }}
+{% endif %}

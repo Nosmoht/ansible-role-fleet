@@ -1,0 +1,44 @@
+---
+- hosts: all
+  vars:
+    fleet_unit_files:
+    - name: apache@.service
+      description: Apache Service %i
+      image_owner: coreos
+      image_name: apache
+      container_name: apache%i
+      before:
+      - apache-discovery@%i.service
+      run_options: --rm -p 80:80
+      run_args: /usr/sbin/apache2ctl -D FOREGROUND
+      conflicts:
+      - apache@%i.service
+    - name: apache-discovery@.service
+      description: Announce Apache %i
+      after:
+      - apache@%i.service
+      bindsto:
+      - apache@%i.service
+      start: '/bin/bash -c '' 
+      while true; do 
+        curl -f ${COREOS_PUBLIC_IPV4}:80; 
+        if [ $? -eq 0 ]; then
+          etcdctl set /services/apache/${COREOS_PUBLIC_IPV4} \''{"host": "%H", "ipv4_addr": ${COREOS_PUBLIC_IPV4}, "port": 80}\'' --ttl 30; 
+        else 
+          etcdctl rm /services/apache/${COREOS_PUBLIC_IPV4}; 
+        fi; 
+        sleep 20; 
+      done'''
+      stop: /usr/bin/etcdctl rm /services/website/apache@%i
+      machineof: apache@%i.service
+    fleet_services:
+    - name: apache@1.service
+      state: running
+    - name: apache-discovery@1.service
+      state: running
+    - name: apache@2.service
+      state: running
+    - name: apache-discovery@2.service
+      state: running
+  roles:
+  - role: fleet

@@ -1,0 +1,19 @@
+---
+- name: Ensure directories do exist and permissions are set
+  file:
+    path: '{{ fleet_unit_file_directory_path }}'
+    state: directory
+    owner: '{{ fleet_unit_file_owner }}'
+    group: '{{ fleet_unit_file_group }}'
+    mode: '{{ fleet_unit_file_directory_mode }}'
+  tags: path
+
+- name: Ensure unit files do exist
+  template:
+    src: '{{ fleet_unit_file_template }}'
+    dest: '{{ fleet_unit_file_directory_path }}/{{ item.name }}'
+    owner: '{{ fleet_unit_file_owner }}'
+    group: '{{ fleet_unit_file_group }}'
+    mode: '0640'
+  with_items: fleet_unit_files
+  tags: unit-files
