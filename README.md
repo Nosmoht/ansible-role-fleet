@@ -36,12 +36,16 @@ Unit file variables
 | name | Unit file filename | String
 | image_owner | Name of image owner in Registry | String |
 | image_name | Name of image in Registry | String |
+| container_name | Name of the container when started by Docker | String |
 | registry_hostname | Hostname of registry where to pull the image from. If empty image will be put from public Docker registry | String |
 | registry_port | Port of registry where to pull image from | Integer |
-| container_name | Name of the container when started by Docker | String |
 | requires | List of services that must be started as a requirement | Array of Strings |
 | before | List of services that must be started before the service can be started | Array of String |
+| bindsto | List of services the service binds to | Array of Strings |
 | conflicts | List of services which do conflict with this services. If specified Fleet will start the service on another CoreOS node | Array of String |
+| run_options | Options passed to docker run | String |
+| run_args | Arguments passed to the container | String |
+
 Dependencies
 ------------
 
