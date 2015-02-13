@@ -1,38 +1,81 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Setup and manage Fleet services used in CoreOS.
+
+Features:
+- Setup a directory where unit files will be stored
+- Deployment of Fleet unit files based on templates
+
+Not yet implemented:
+- Library to manage (start, stop, submit, unload, ... ) unit files with fleetctl.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Ansible
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+| Name | Description | Default |
+| ------- | ---------------- | --------- |
+| fleet_unit_file_owner | OS user owning unit files| core |
+| fleet_unit_file_group | OS group owing unit files | core |
+| fleet_unit_file_directory_path | Directory where unit files will be stored | /home/core/services |
+| fleet_unit_file_directory_mode | Mode of unit files | '0750' |
+| fleet_unit_file_template | Template used to generate unit files| unit.service.j2 |
+| fleet_docker_cmd | Docker executable file. Will be used inside the default template. | /usr/bin/docker |
+| fleet_default_required_services | Default services required for a service. Used inside template file | ['etcd.service','docker.service'] |
+| fleet_unit_files | Array of Unit file definitions to deploy. Must be set by Playbook or group/host vars | See following description|
 
+Unit file variables
+------------
+| Name | Description | Type |
+| -------- | -------------- | ------- |
+| name | Unit file filename | String
+| image_owner | Name of image owner in Registry | String |
+| image_name | Name of image in Registry | String |
+| registry_hostname | Hostname of registry where to pull the image from. If empty image will be put from public Docker registry | String |
+| registry_port | Port of registry where to pull image from | Integer |
+| container_name | Name of the container when started by Docker | String |
+| requires | List of services that must be started as a requirement | Array of Strings |
+| before | List of services that must be started before the service can be started | Array of String |
+| conflicts | List of services which do conflict with this services. If specified Fleet will start the service on another CoreOS node | Array of String |
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None. CoreOS must be prepared with a Python interpreter.
 
 Example Playbook
 ----------------
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
+    - hosts: coreos
+      vars:
+        fleet_units:
+        - name: myapp.service
+          image_owner: user
+          image_name: myapp
+          registry_hostname: registry.example.com
+          registry_port: 5000
+          container_name: myappcontainer
+          requires:
+          - docker.service
+          after:
+          - docker.service
+          conflicts:
+          - my2app.service
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: fleet }
 
 License
 -------
 
-BSD
+
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+email: thomas.krahn@esailors.de
