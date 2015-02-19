@@ -46,6 +46,14 @@ def is_unit_submitted(unit, unit_files):
             return True
     return False
 
+def get_units(module):
+    command = "%s list-units" % (FLEETCTL_BIN)
+    rc, out, err = module.run_command(command)
+    if rc != 0:
+        module.fail_json(msg="Error while listing units: %s" % (out), rc=rc, err=err)
+    result = [re.sub(r'(\t+?)\1', r'\1', line).split('\t') for line in out.split('\n') if line]
+    return result[1:]
+
 def ensure(module):
     changed = False
     unit_files = None
@@ -62,7 +70,8 @@ def ensure(module):
         unit_submitted = is_unit_submitted(name, unit_files)
     if state != 'destroyed' and not unit_submitted:        
         changed = submit_unit(module, name, path)
-#    if state == 'loaded' 
+    if state == 'destroyed' and unit_submitted:
+        changed = destroy_unit(module, name)
     return changed
 
 def main():
