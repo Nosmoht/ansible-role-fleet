@@ -1,10 +1,14 @@
 ---
-fleet_unit_file_owner: core
-fleet_unit_file_group: core
-fleet_unit_file_directory_path: /home/{{ fleet_unit_file_owner }}/services
+fleet_unit_file_owner: '{{ lookup(''env'', ''USER'') }}'
+fleet_unit_file_directory_path: /tmp/fleetctl
 fleet_unit_file_directory_mode: '0750'
+fleet_unit_file_mode: '0640'
 fleet_unit_file_template: unit.service.j2
 fleet_docker_cmd: /usr/bin/docker
 fleet_default_required_services:
 - etcd.service
 - docker.service
+fleet_endpoint: 127.0.0.1
+fleet_port: 4001
+fleet_env:
+  FLEETCTL_ENDPOINT: http://{{ fleet_endpoint }}:{{ fleet_port }}
