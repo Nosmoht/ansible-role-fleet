@@ -37,6 +37,6 @@
   environment: fleet_env
   fleet_unit:
     name: '{{ item.name }}'
-    state: '{{ item.state }}'
+    state: '{{ item.state | default(fleet_unit_default_state) }}'
   with_items: fleet_units
   tags: units
