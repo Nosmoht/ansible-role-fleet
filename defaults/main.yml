@@ -4,6 +4,7 @@ fleet_unit_file_directory_path: /tmp/fleetctl
 fleet_unit_file_directory_mode: '0750'
 fleet_unit_file_mode: '0640'
 fleet_unit_file_template: unit.service.j2
+fleet_unit_default_state: started
 fleet_docker_cmd: /usr/bin/docker
 fleet_default_required_services:
 - etcd.service
