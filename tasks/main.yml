@@ -1,19 +1,42 @@
 ---
-- name: Ensure directories do exist and permissions are set
+- name: Ensure unit file directory
+  connection: local
+  run_once: true
   file:
     path: '{{ fleet_unit_file_directory_path }}'
     state: directory
     owner: '{{ fleet_unit_file_owner }}'
-    group: '{{ fleet_unit_file_group }}'
     mode: '{{ fleet_unit_file_directory_mode }}'
-  tags: path
+  tags: unit-directory
 
-- name: Ensure unit files do exist
+- name: Ensure unit file
+  connection: local
+  run_once: true
   template:
     src: '{{ fleet_unit_file_template }}'
     dest: '{{ fleet_unit_file_directory_path }}/{{ item.name }}'
     owner: '{{ fleet_unit_file_owner }}'
-    group: '{{ fleet_unit_file_group }}'
-    mode: '0640'
+    mode: '{{ fleet_unit_file_mode }}'
   with_items: fleet_unit_files
   tags: unit-files
+
+- name: Submit unit file
+  connection: local
+  run_once: true
+  environment: fleet_env
+  fleet_unit:
+    name: '{{ item.name }}'
+    path: '{{ fleet_unit_file_directory_path }}'
+    state: submitted
+  with_items: fleet_unit_files
+  tags: unit-files
+
+- name: Ensure unit state
+  connection: local
+  run_once: true
+  environment: fleet_env
+  fleet_unit:
+    name: '{{ item.name }}'
+    state: '{{ item.state }}'
+  with_items: fleet_units
+  tags: units
