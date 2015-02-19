@@ -1,6 +1,10 @@
 ---
 - hosts: all
+  connection: local
+  gather_facts: false
   vars:
+    fleet_endpoint: 172.17.8.101
+    fleet_port: 4001
     fleet_unit_files:
     - name: apache@.service
       description: Apache Service %i
@@ -31,14 +35,14 @@
       done'''
       stop: /usr/bin/etcdctl rm /services/website/apache@%i
       machineof: apache@%i.service
-    fleet_services:
+    fleet_units:
     - name: apache@1.service
-      state: running
+      state: started
     - name: apache-discovery@1.service
-      state: running
+      state: started
     - name: apache@2.service
-      state: running
+      state: started
     - name: apache-discovery@2.service
-      state: running
+      state: started
   roles:
   - role: fleet
