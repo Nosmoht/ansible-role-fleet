@@ -18,7 +18,6 @@
     owner: '{{ fleet_unit_file_owner }}'
     mode: '{{ fleet_unit_file_mode }}'
   with_items: fleet_unit_files
-  register: fleet_unit_files_register
   tags: unit-files
 
 - name: Submit unit file
@@ -26,13 +25,10 @@
   run_once: true
   environment: fleet_env
   fleet_unit:
-    name: '{{ item.0.name }}'
+    name: '{{ item.name }}'
     path: '{{ fleet_unit_file_directory_path }}'
     state: submitted
-  when: not '{{ item.1.changed }}'
-  with_together:
-  - fleet_unit_files
-  - fleet_unit_files_register.results
+  with_items: fleet_unit_files
   tags: unit-files
 
 - name: Ensure unit state
