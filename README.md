@@ -13,6 +13,8 @@ Not yet implemented:
 Requirements
 ------------
 
+A local installation of fleet is required. See https://github.com/coreos/fleet.
+
 Ansible
 
 Role Variables
