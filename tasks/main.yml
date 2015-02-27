@@ -17,7 +17,7 @@
     dest: '{{ fleet_unit_file_directory_path }}/{{ item.name }}'
     owner: '{{ fleet_unit_file_owner }}'
     mode: '{{ fleet_unit_file_mode }}'
-  with_items: fleet_unit_files
+  with_items: fleet_unit_files | default([])
   tags: unit-files
 
 - name: Submit local unit file
@@ -28,15 +28,15 @@
     name: '{{ item.name }}'
     path: '{{ fleet_unit_file_directory_path }}'
     state: submitted
-  with_items: fleet_unit_files
+  with_items: fleet_unit_files | default([])
   tags: unit-files
 
-- name: Ensure unit state
+- name: Ensure submitted unit state
   connection: local
   run_once: true
   environment: fleet_env
   fleet_unit:
     name: '{{ item.name }}'
     state: '{{ item.state | default(fleet_unit_default_state) }}'
-  with_items: fleet_units
+  with_items: fleet_units | default([])
   tags: units
