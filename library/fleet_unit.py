@@ -4,7 +4,7 @@
 
 import os
 
-FLEETCTL_BIN = '/usr/bin/fleetctl'
+FLEETCTL_BIN = 'fleetctl'
 
 def fleetctl(module, action, unit):
     command = "%s %s %s" % (FLEETCTL_BIN, action, unit)
