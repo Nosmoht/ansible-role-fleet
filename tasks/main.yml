@@ -1,5 +1,5 @@
 ---
-- name: Ensure unit file directory
+- name: Ensure local unit file directory exists
   connection: local
   run_once: true
   file:
@@ -9,7 +9,7 @@
     mode: '{{ fleet_unit_file_directory_mode }}'
   tags: unit-directory
 
-- name: Ensure unit file
+- name: Create unit file based on template
   connection: local
   run_once: true
   template:
@@ -20,7 +20,7 @@
   with_items: fleet_unit_files
   tags: unit-files
 
-- name: Submit unit file
+- name: Submit local unit file
   connection: local
   run_once: true
   environment: fleet_env
