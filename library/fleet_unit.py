@@ -14,7 +14,10 @@ def fleetctl(module, action, unit):
     return True
 
 def submit_unit(module, name, path):
-    return fleetctl(module, 'submit', path + '/' + name)
+    if path:
+        return fleetctl(module, 'submit', path + '/' + name)
+    else:
+        return fleetctl(module, 'submit', name)
 
 def load_unit(module, name):
     return fleetctl(module, 'load', name)
