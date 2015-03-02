@@ -91,12 +91,13 @@ def ensure(module):
     unit_file_exists = False
     unit = None
     # Set parameters
-    name = module.params['name']
-    path = module.params['path']
+    name = os.path.basename(module.params['name'])
+    path = os.path.dirname(module.params['name'])
     state = module.params['state']
+
     unit_files = get_unit_files(module)
     unit_submitted = is_unit_submitted(name, unit_files)
- 
+
     if not unit_submitted:
         if state not in ['destroyed', 'unloaded']: 
             changed = submit_unit(module, name, path)
@@ -117,7 +118,6 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             name=dict(required=True, Type='String'),
-            path=dict(required=False, Type='String'),
             state=dict(Default='started', choices=['submitted', 'loaded', 'started', 'stopped', 'unloaded', 'destroyed']),
         ),
     )
