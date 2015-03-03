@@ -66,18 +66,13 @@ def unit_is_loaded(unit):
     return get_unit_state(unit) == 'loaded'
 
 def unit_is_started(unit):
-    return get_unit_state(unit) == 'running'
+    return get_unit_state(unit) == 'launched'
 
 def unit_is_stopped(unit):
-    return get_unit_state(unit) == 'stop'
+    return get_unit_state(unit) == 'loaded'
 
-def get_units(module):
-    command = "%s list-units" % (FLEETCTL_BIN)
-    rc, out, err = module.run_command(command)
-    if rc != 0:
-        module.fail_json(msg="Error while listing units: %s" % (out), rc=rc, err=err)
-    result = [re.sub(r'(\t+?)\1', r'\1', line).split('\t') for line in out.split('\n') if line]
-    return result[1:]
+def unit_is_unloaded(unit):
+    return get_unit_state(unit) == 'inactive'
 
 def get_unit(name, units):
     for unit in units:
@@ -95,8 +90,8 @@ def ensure(module):
     path = os.path.dirname(module.params['name'])
     state = module.params['state']
 
-    unit_files = get_unit_files(module)
-    unit_submitted = is_unit_submitted(name, unit_files)
+    units = get_unit_files(module)
+    unit_submitted = is_unit_submitted(name, units)
 
     if not unit_submitted:
         if state not in ['destroyed', 'unloaded']: 
@@ -104,7 +99,7 @@ def ensure(module):
         else:
             module.fail_json(msg="Unit not submitted: %s" % name)
 
-    unit = get_unit(name, get_units(module))
+    unit = get_unit(name, units)
 
     if state == 'started' and not unit_is_started(unit):
         changed = start_unit(module, name)
@@ -112,6 +107,8 @@ def ensure(module):
         changed = stop_unit(module, name)
     if state == 'destroyed' and unit_submitted:
         changed = destroy_unit(module, unit)
+    if state == 'unloaded' and not unit_is_unloaded(unit):
+        changed = unload_unit(module, name)
     return changed
 
 def main():
