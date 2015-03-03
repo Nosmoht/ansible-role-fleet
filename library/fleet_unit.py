@@ -101,6 +101,8 @@ def ensure(module):
 
     unit = get_unit(name, units)
 
+    if state == 'loaded' and not unit_is_loaded(unit):
+        changed = load_unit(module, name)
     if state == 'started' and not unit_is_started(unit):
         changed = start_unit(module, name)
     if state == 'stopped' and unit_is_started(unit):
