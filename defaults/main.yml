@@ -1,4 +1,10 @@
 ---
+fleet_target_directory: /opt/fleet
+fleet_bin_directory: '{{ fleet_target_directory }}/bin'
+fleet_fleet_binary_file_name: fleetd
+fleet_fleetctl_binary_file_name: fleetctl
+fleet_git_repository: git@github.com:coreos/fleet.git
+fleet_install: true
 fleet_unit_file_owner: '{{ lookup(''env'', ''USER'') }}'
 fleet_unit_file_directory_path: /tmp/fleetctl
 fleet_unit_file_directory_mode: '0750'
@@ -9,7 +15,8 @@ fleet_docker_cmd: /usr/bin/docker
 fleet_default_required_services:
 - etcd.service
 - docker.service
+fleet_protocol: http
 fleet_endpoint: 127.0.0.1
 fleet_port: 4001
 fleet_env:
-  FLEETCTL_ENDPOINT: http://{{ fleet_endpoint }}:{{ fleet_port }}
+  FLEETCTL_ENDPOINT: '{{ fleet_protocol }}://{{ fleet_endpoint }}:{{ fleet_port }}'
