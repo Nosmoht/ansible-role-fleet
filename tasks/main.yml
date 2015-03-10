@@ -1,42 +1,8 @@
 ---
-- name: Ensure local unit file directory exists
-  connection: local
-  run_once: true
-  file:
-    path: '{{ fleet_unit_file_directory_path }}'
-    state: directory
-    owner: '{{ fleet_unit_file_owner }}'
-    mode: '{{ fleet_unit_file_directory_mode }}'
-  tags: unit-directory
+- include: install.yml
+  tags: install
+  when: fleet_install
 
-- name: Create unit file based on template
-  connection: local
-  run_once: true
-  template:
-    src: '{{ fleet_unit_file_template }}'
-    dest: '{{ fleet_unit_file_directory_path }}/{{ item.name }}'
-    owner: '{{ fleet_unit_file_owner }}'
-    mode: '{{ fleet_unit_file_mode }}'
-  with_items: fleet_unit_files | default([])
-  tags: unit-files
-
-- name: Submit local unit file
-  connection: local
-  run_once: true
-  environment: fleet_env
-  fleet_unit:
-    name: '{{ item.name }}'
-    path: '{{ fleet_unit_file_directory_path }}'
-    state: submitted
-  with_items: fleet_unit_files | default([])
-  tags: unit-files
-
-- name: Ensure submitted unit state
-  connection: local
-  run_once: true
-  environment: fleet_env
-  fleet_unit:
-    name: '{{ item.name }}'
-    state: '{{ item.state | default(fleet_unit_default_state) }}'
-  with_items: fleet_units | default([])
-  tags: units
+- include: deploy_unit.yml
+  tags: deploy_unit
+  when: fleet_unit_files is defined
