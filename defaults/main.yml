@@ -1,5 +1,5 @@
 ---
-fleet_target_directory: /opt/fleet
+fleet_target_directory: '{{ lookup("env", "HOME") }}/fleet'
 fleet_bin_directory: '{{ fleet_target_directory }}/bin'
 fleet_fleet_binary_file_name: fleetd
 fleet_fleetctl_binary_file_name: fleetctl

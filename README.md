@@ -22,6 +22,9 @@ Role Variables
 
 | Name | Description | Default |
 | ------- | ---------------- | --------- |
+| fleet_target_dir | Directory where to checkout fleet from Git | ~/fleet |
+| fleet_git_repository | Gir repository URL to checkout  |  git@github.com:coreos/fleet.git |
+| fleet_install | Boolean to define if fleet should be installed | true |
 | fleet_unit_file_owner | OS user owning unit files| core |
 | fleet_unit_file_group | OS group owing unit files | core |
 | fleet_unit_file_directory_path | Directory where unit files will be stored | /home/core/services |
