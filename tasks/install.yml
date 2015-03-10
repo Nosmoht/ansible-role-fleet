@@ -1,0 +1,23 @@
+---
+- name: Ensure target directory exists
+  file:
+    dest: '{{ fleet_target_directory }}'
+    state: directory
+
+- name: Checkout Git repo
+  git:
+    repo: '{{ fleet_git_repository }}'
+    dest: '{{ fleet_target_directory }}'
+    update: true
+  register: fleet_git_result
+
+- name: Check if binary is build already
+  stat:
+    path: '{{ fleet_bin_directory }}/{{ fleet_fleet_binary_file_name }}'
+  register: fleet_binary_file
+
+- name: Build binaries
+  shell: '{{ fleet_target_directory }}/build'
+  args:
+    chdir: '{{ fleet_target_directory }}'
+  when: not fleet_binary_file.stat.exists or fleet_git_result.changed
