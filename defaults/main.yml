@@ -19,4 +19,5 @@ fleet_protocol: http
 fleet_endpoint: 127.0.0.1
 fleet_port: 4001
 fleet_env:
+  PATH: '{{ fleet_bin_directory }}:{{ ansible_env.PATH }}'
   FLEETCTL_ENDPOINT: '{{ fleet_protocol }}://{{ fleet_endpoint }}:{{ fleet_port }}'
