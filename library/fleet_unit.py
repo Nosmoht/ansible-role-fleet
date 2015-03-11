@@ -1,10 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # -*- coding: utf-8 -*-
 
 import os
+import re
 
 FLEETCTL_BIN = 'fleetctl'
+
+FLEET_MATRIX = [{"command": "submit", "state": "inactive"},
+                {"command": "load", "state": "loaded"},
+                {"command": "start", "state": "launched"},
+                {"command": "stop", "state": "loaded"},
+                {"command": "unload", "state": "inactive"}]
 
 def fleetctl(module, action, unit):
     command = "%s %s %s" % (FLEETCTL_BIN, action, unit)
@@ -21,26 +28,26 @@ def submit_unit(module, name, path):
 
 def load_unit(module, name):
     return fleetctl(module, 'load', name)
-    
+
 def start_unit(module, name):
     return fleetctl(module, 'start', name)
-    
+
 def stop_unit(module, name):
     return fleetctl(module, 'stop', name)
-    
+
 def unload_unit(module, name):
     return fleetctl(module, 'unload', name)
-    
+
 def destroy_unit(module, name):
     return fleetctl(module, 'destroy', name)
-    
+
 def get_unit_files(module):
     command = "%s list-unit-files" % (FLEETCTL_BIN)
     rc, out, err = module.run_command(command)
     if rc != 0:
         module.fail_json(msg="Error while listing unit files: %s" % (out), rc=rc, err=err)
-        
-    result = [re.sub(r'(\t+?)\1', r'\1', line).split('\t') for line in out.split('\n') if line]        
+
+    result = [re.sub(r'(\t+?)\1', r'\1', line).split('\t') for line in out.split('\n') if line]
     return result[1:]
 
 def is_unit_submitted(unit, unit_files):
@@ -48,10 +55,10 @@ def is_unit_submitted(unit, unit_files):
     # Determine if unit is an instance unit (http://0pointer.de/blog/projects/instances.html)
     # True: apache@8080.service, False: apache@.service, myapp.service
     if re.search(r'@.+\.', unit):
-        unit_file_name = re.sub('(.+@)(.+)(\..+)', r'\1\3', unit)
+        unit_file_name = re.sub(r'(.+@)(.+)(\..+)', r'\1\3', unit)
     else:
-        unit_file_name = unit;
-    
+        unit_file_name = unit
+
     for line in unit_files:
         if line[0] == unit_file_name:
             return True
@@ -77,13 +84,11 @@ def unit_is_unloaded(unit):
 def get_unit(name, units):
     for unit in units:
         if unit[0] == name:
-            return unit;
+            return unit
     return None
 
 def ensure(module):
     changed = False
-    unit_files = None
-    unit_file_exists = False
     unit = None
     # Set parameters
     name = os.path.basename(module.params['name'])
@@ -94,7 +99,7 @@ def ensure(module):
     unit_submitted = is_unit_submitted(name, units)
 
     if not unit_submitted:
-        if state not in ['destroyed', 'unloaded']: 
+        if state not in ['destroyed', 'unloaded']:
             changed = submit_unit(module, name, path)
         else:
             module.fail_json(msg="Unit not submitted: %s" % name)
@@ -120,7 +125,7 @@ def main():
             state=dict(Default='started', choices=['submitted', 'loaded', 'started', 'stopped', 'unloaded', 'destroyed']),
         ),
     )
-    
+
     changed = ensure(module)
     module.exit_json(changed=changed, name=module.params['name'])
 
