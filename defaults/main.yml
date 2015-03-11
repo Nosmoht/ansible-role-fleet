@@ -1,9 +1,9 @@
 ---
-fleet_target_directory: '{{ lookup("env", "HOME") }}/fleet'
+fleet_target_directory: '{{ lookup(''env'', ''HOME'') }}/fleet'
 fleet_bin_directory: '{{ fleet_target_directory }}/bin'
 fleet_fleet_binary_file_name: fleetd
 fleet_fleetctl_binary_file_name: fleetctl
-fleet_git_repository: git@github.com:coreos/fleet.git
+fleet_git_repository: https://github.com/coreos/fleet.git
 fleet_install: true
 fleet_unit_file_owner: '{{ lookup(''env'', ''USER'') }}'
 fleet_unit_file_directory_path: /tmp/fleetctl
