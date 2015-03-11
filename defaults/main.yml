@@ -2,9 +2,13 @@
 fleet_target_directory: '{{ lookup(''env'', ''HOME'') }}/fleet'
 fleet_bin_directory: '{{ fleet_target_directory }}/bin'
 fleet_fleet_binary_file_name: fleetd
+fleet_fleet_binary_file: '{{ fleet_bin_directory }}/{{ fleet_fleet_binary_file_name }}'
 fleet_fleetctl_binary_file_name: fleetctl
+fleet_fleetctl_binary_file: '{{ fleet_bin_directory }}/{{ fleet_fleetctl_binary_file_name }}'
 fleet_git_repository: https://github.com/coreos/fleet.git
 fleet_install: true
+fleet_install_create_symlink: true
+fleet_install_symlink_path: /usr/local/bin
 fleet_unit_file_owner: '{{ lookup(''env'', ''USER'') }}'
 fleet_unit_file_directory_path: /tmp/fleetctl
 fleet_unit_file_directory_mode: '0750'
