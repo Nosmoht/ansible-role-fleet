@@ -1,30 +1,31 @@
-Role Name
+ansible-role-fleet
 =========
 
-Setup and manage Fleet services used in CoreOS.
+# Description
 
-Features:
-- Setup a directory where unit files will be stored
-- Deployment of Fleet unit files based on templates
+The roles provides the following functionalities
+- Install fleet and fleetctl
+- Manage Fleet units on a remote CoreOS system
 
-Not yet implemented:
-- Library to manage (start, stop, submit, unload, ... ) unit files with fleetctl.
+# Requirements
+- Go must be installed on the machine if the binaries should be installed.
+- Ansible 1.2
 
-Requirements
-------------
-
-A local installation of fleet is required. See https://github.com/coreos/fleet.
-
-Ansible
-
-Role Variables
---------------
+# Role Variables
+## Binary installation
 
 | Name | Description | Default |
 | ------- | ---------------- | --------- |
 | fleet_target_dir | Directory where to checkout fleet from Git | ~/fleet |
 | fleet_git_repository | Gir repository URL to checkout  |  git@github.com:coreos/fleet.git |
 | fleet_install | Boolean to define if fleet should be installed | true |
+| fleet_install_create_symlink | Boolean to define if a symlink should be created pointing to fleet_target_dir/bin/fleet | true |
+| fleet_install_symlink_path | Path where symlink has to be created | /usr/local/bin
+
+## Fleet units
+
+| Name | Description | Default |
+| ------- | ---------------- | --------- |
 | fleet_unit_file_owner | OS user owning unit files| core |
 | fleet_unit_file_group | OS group owing unit files | core |
 | fleet_unit_file_directory_path | Directory where unit files will be stored | /home/core/services |
@@ -34,8 +35,8 @@ Role Variables
 | fleet_default_required_services | Default services required for a service. Used inside template file | ['etcd.service','docker.service'] |
 | fleet_unit_files | Array of Unit file definitions to deploy. Must be set by Playbook or group/host vars | See following description|
 
-Unit file variables
-------------
+## Unit file variables
+
 | Name | Description | Type |
 | -------- | -------------- | ------- |
 | name | Unit file filename | String
@@ -54,8 +55,6 @@ Unit file variables
 Dependencies
 ------------
 
-None. CoreOS must be prepared with a Python interpreter.
-
 Example Playbook
 ----------------
 
@@ -63,6 +62,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: coreos
       vars:
+        fleet_install: true
         fleet_units:
         - name: myapp.service
           image_owner: user
@@ -82,9 +82,10 @@ Including an example of how to use your role (for instance, with variables passe
 License
 -------
 
-
+BSD
 
 Author Information
 ------------------
+[Thomas Krahn]
 
-email: thomas.krahn@esailors.de
+[Thomas Krahn]: emailto:ntbc@gmx.net
