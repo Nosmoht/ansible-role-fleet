@@ -23,7 +23,6 @@
   when: not fleet_binary_file.stat.exists or fleet_git_result.changed
 
 - name: Ensure symlink to fleet binary
-  sudo: true
   file:
     src: '{{ fleet_fleet_binary_file }}'
     path: '{{ fleet_install_symlink_path }}/{{ fleet_fleet_binary_file_name }}'
@@ -31,7 +30,6 @@
   when: fleet_install_create_symlink
 
 - name: Ensure symlink to fleetctl binary
-  sudo: true
   file:
     src: '{{ fleet_fleetctl_binary_file }}'
     path: '{{ fleet_install_symlink_path }}/{{ fleet_fleetctl_binary_file_name }}'
