@@ -6,6 +6,7 @@ fleet_fleet_binary_file: '{{ fleet_bin_directory }}/{{ fleet_fleet_binary_file_n
 fleet_fleetctl_binary_file_name: fleetctl
 fleet_fleetctl_binary_file: '{{ fleet_bin_directory }}/{{ fleet_fleetctl_binary_file_name }}'
 fleet_git_repository: https://github.com/coreos/fleet.git
+fleet_build_version_default: v0.9.1
 fleet_install: true
 fleet_install_create_symlink: true
 fleet_install_symlink_path: /usr/local/bin
