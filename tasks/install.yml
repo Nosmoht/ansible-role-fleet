@@ -8,7 +8,8 @@
   git:
     repo: '{{ fleet_git_repository }}'
     dest: '{{ fleet_target_directory }}'
-    update: true
+    update: '{{ fleet_build_repo_update | default(false) }}'
+    version: '{{ fleet_build_version | default(fleet_build_version_default) }}'
   register: fleet_git_result
 
 - name: Check if binary is build already
