@@ -3,54 +3,37 @@ ansible-role-fleet
 
 # Description
 
-The roles provides the following functionalities
-- Install fleet and fleetctl
-- Manage Fleet units on a remote CoreOS system
+The roles can be used to do the following tasks
+- Checkout and build Fleet binaries (fleetd and fleetctl) on local or remote system
+- Install Fleet binary files
+
+The process of checking out and building Fleet binaries can be delegated to a remote system called _build host_.
 
 # Requirements
-- Go must be installed on the machine if the binaries should be installed.
-- Ansible 1.2
+- Ansible >= 1.2
+- Git and Go must be installed on _build host_
 
 # Role Variables
-## Binary installation
+## Build variables
 
-| Name | Description | Default |
-| ------- | ---------------- | --------- |
-| fleet_target_dir | Directory where to checkout fleet from Git | ~/fleet |
-| fleet_git_repository | Gir repository URL to checkout  |  git@github.com:coreos/fleet.git |
-| fleet_install | Boolean to define if fleet should be installed | true |
-| fleet_install_create_symlink | Boolean to define if a symlink should be created pointing to fleet_target_dir/bin/fleet | true |
-| fleet_install_symlink_path | Path where symlink has to be created | /usr/local/bin
+| Name | Description | Default value |
+|:-----  | :----- | :----- |
+| fleet_build | Boolean to define if binaries should be build | false |
+| fleet_build_repo_url | String to define the Git repo URL | https://github.com/coreos/fleet.git |
+| fleet_build_repo_update | Boolean to define if update should be checked out | false |
+| fleet_build_version_default | String which equals the Git tag to checkout by default | v0.9.1 |
+| fleet_build_host | String to define the host where build tasks will be delegated to | '{{ inventory_hostname }}' |
+| fleet_build_path | String to define a directory where the Git repository will be cloned into | '{{ lookup(''env'', ''HOME'') }}/fleet' |
+| fleet_build_bin_path | String to define the directory where binary files are stored | '{{ fleet_build_path}}/bin'
 
-## Fleet units
-
-| Name | Description | Default |
-| ------- | ---------------- | --------- |
-| fleet_unit_file_owner | OS user owning unit files| core |
-| fleet_unit_file_group | OS group owing unit files | core |
-| fleet_unit_file_directory_path | Directory where unit files will be stored | /home/core/services |
-| fleet_unit_file_directory_mode | Mode of unit files | '0750' |
-| fleet_unit_file_template | Template used to generate unit files| unit.service.j2 |
-| fleet_docker_cmd | Docker executable file. Will be used inside the default template. | /usr/bin/docker |
-| fleet_default_required_services | Default services required for a service. Used inside template file | ['etcd.service','docker.service'] |
-| fleet_unit_files | Array of Unit file definitions to deploy. Must be set by Playbook or group/host vars | See following description|
-
-## Unit file variables
-
-| Name | Description | Type |
-| -------- | -------------- | ------- |
-| name | Unit file filename | String
-| image_owner | Name of image owner in Registry | String |
-| image_name | Name of image in Registry | String |
-| container_name | Name of the container when started by Docker | String |
-| registry_hostname | Hostname of registry where to pull the image from. If empty image will be put from public Docker registry | String |
-| registry_port | Port of registry where to pull image from | Integer |
-| requires | List of services that must be started as a requirement | Array of Strings |
-| before | List of services that must be started before the service can be started | Array of String |
-| bindsto | List of services the service binds to | Array of Strings |
-| conflicts | List of services which do conflict with this services. If specified Fleet will start the service on another CoreOS node | Array of String |
-| run_options | Options passed to docker run | String |
-| run_args | Arguments passed to the container | String |
+## Install variables
+| Name | Description | Default value |
+|:-----  | :----- | :----- |
+| fleet_install | Boolean to define if the installation should be done | false |
+| fleet_install_path | String to define where binaries will be installed | /usr/local/bin |
+| fleet_install_binary_owner | String to define the binary owner | root |
+| fleet_install_binary_group | String to define the binary group | root |
+| fleet_install_binary_mode | String to define the binary mode | '0755' |
 
 Dependencies
 ------------
@@ -58,26 +41,22 @@ Dependencies
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Checkout, build and install Fleet binaries and local system.
 
-    - hosts: coreos
-      vars:
-        fleet_install: true
-        fleet_units:
-        - name: myapp.service
-          image_owner: user
-          image_name: myapp
-          registry_hostname: registry.example.com
-          registry_port: 5000
-          container_name: myappcontainer
-          requires:
-          - docker.service
-          after:
-          - docker.service
-          conflicts:
-          - my2app.service
+    - hosts: 127.0.0.1
       roles:
-         - { role: fleet }
+      - role: fleet
+        fleet_build: true
+        fleet_install: true
+
+Checkout, build Fleet binaries on remote system build-host.example.com and install binaries on local system.
+
+    - hosts: 127.0.0.1
+      roles:
+      - role: fleet
+        fleet_build: true
+        fleet_build_host: build-host.example.com
+        fleet_install: true
 
 License
 -------
