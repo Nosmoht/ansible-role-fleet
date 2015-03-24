@@ -1,25 +1,21 @@
 ---
-fleet_target_directory: '{{ lookup(''env'', ''HOME'') }}/fleet'
-fleet_bin_directory: '{{ fleet_target_directory }}/bin'
 fleet_fleet_binary_file_name: fleetd
 fleet_fleet_binary_file: '{{ fleet_bin_directory }}/{{ fleet_fleet_binary_file_name }}'
 fleet_fleetctl_binary_file_name: fleetctl
 fleet_fleetctl_binary_file: '{{ fleet_bin_directory }}/{{ fleet_fleetctl_binary_file_name }}'
-fleet_git_repository: https://github.com/coreos/fleet.git
+fleet_build: false
+fleet_build_host: '{{ inventory_hostname }}'
+fleet_build_path: '{{ lookup(''env'', ''HOME'') }}/fleet'
+fleet_build_bin_path: '{{ fleet_build_path }}/bin'
+fleet_build_repo_url: https://github.com/coreos/fleet.git
+fleet_build_repo_update: false
 fleet_build_version_default: v0.9.1
-fleet_install: true
-fleet_install_create_symlink: true
-fleet_install_symlink_path: /usr/local/bin
-fleet_unit_file_owner: '{{ lookup(''env'', ''USER'') }}'
-fleet_unit_file_directory_path: /tmp/fleetctl
-fleet_unit_file_directory_mode: '0750'
-fleet_unit_file_mode: '0640'
-fleet_unit_file_template: unit.service.j2
-fleet_unit_default_state: started
-fleet_docker_cmd: /usr/bin/docker
-fleet_default_required_services:
-- etcd.service
-- docker.service
+fleet_bin_directory: '{{ fleet_build_path }}/bin'
+fleet_install: false
+fleet_install_path: /usr/local/bin
+fleet_install_binary_owner: '{{ lookup(''env'', ''USER'') }}'
+fleet_install_binary_group: '{{ lookup(''env'', ''USER'') }}'
+fleet_install_binary_mode: '0755'
 fleet_protocol: http
 fleet_endpoint: 127.0.0.1
 fleet_port: 4001
