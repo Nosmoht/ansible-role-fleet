@@ -10,7 +10,7 @@
   - '{{ fleet_fleetctl_binary_file }}'
 
 - name: Ensure fleetd binary
-  sudo: true
+  sudo: '{{ fleet_install_sudo }}'
   copy:
     src: '/tmp/{{ fleet_build_host }}/{{ fleet_fleet_binary_file }}'
     dest: '{{ fleet_install_path }}/{{ fleet_fleet_binary_file_name }}'
@@ -19,7 +19,7 @@
     group: '{{ fleet_install_binary_group }}'
 
 - name: Ensure fleetctl binary
-  sudo: true
+  sudo: '{{ fleet_install_sudo }}'
   copy:
     src: '/tmp/{{ fleet_build_host }}/{{ fleet_fleetctl_binary_file }}'
     dest: '{{ fleet_install_path }}/{{ fleet_fleetctl_binary_file_name }}'
