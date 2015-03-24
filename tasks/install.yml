@@ -1,38 +1,28 @@
 ---
-- name: Ensure target directory exists
-  file:
-    dest: '{{ fleet_target_directory }}'
-    state: directory
+- name: Fetch binaries from build host
+  connection: local
+  delegate_to: '{{ fleet_build_host }}'
+  fetch:
+    src: '{{ item }}'
+    dest: /tmp
+  with_items:
+  - '{{ fleet_fleet_binary_file }}'
+  - '{{ fleet_fleetctl_binary_file }}'
 
-- name: Checkout Git repo
-  git:
-    repo: '{{ fleet_git_repository }}'
-    dest: '{{ fleet_target_directory }}'
-    update: '{{ fleet_build_repo_update | default(false) }}'
-    version: '{{ fleet_build_version | default(fleet_build_version_default) }}'
-  register: fleet_git_result
+- name: Ensure fleetd binary
+  sudo: true
+  copy:
+    src: '/tmp/{{ fleet_build_host }}/{{ fleet_fleet_binary_file }}'
+    dest: '{{ fleet_install_path }}/{{ fleet_fleet_binary_file_name }}'
+    mode: '{{ fleet_install_binary_mode }}'
+    owner: '{{ fleet_install_binary_owner }}'
+    group: '{{ fleet_install_binary_group }}'
 
-- name: Check if binary is build already
-  stat:
-    path: '{{ fleet_fleet_binary_file }}'
-  register: fleet_binary_file
-
-- name: Build binaries
-  shell: '{{ fleet_target_directory }}/build'
-  args:
-    chdir: '{{ fleet_target_directory }}'
-  when: not fleet_binary_file.stat.exists or fleet_git_result.changed
-
-- name: Ensure symlink to fleet binary
-  file:
-    src: '{{ fleet_fleet_binary_file }}'
-    path: '{{ fleet_install_symlink_path }}/{{ fleet_fleet_binary_file_name }}'
-    state: link
-  when: fleet_install_create_symlink|bool and '{{ ansible_system }}' == 'Linux'
-
-- name: Ensure symlink to fleetctl binary
-  file:
-    src: '{{ fleet_fleetctl_binary_file }}'
-    path: '{{ fleet_install_symlink_path }}/{{ fleet_fleetctl_binary_file_name }}'
-    state: link
-  when: fleet_install_create_symlink|bool
+- name: Ensure fleetctl binary
+  sudo: true
+  copy:
+    src: '/tmp/{{ fleet_build_host }}/{{ fleet_fleetctl_binary_file }}'
+    dest: '{{ fleet_install_path }}/{{ fleet_fleetctl_binary_file_name }}'
+    mode: '{{ fleet_install_binary_mode }}'
+    owner: '{{ fleet_install_binary_owner }}'
+    group: '{{ fleet_install_binary_group }}'
