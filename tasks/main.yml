@@ -1,8 +1,8 @@
 ---
-- include: install.yml
-  tags: install
-  when: fleet_install
+- include: build.yml
+  tags: fleet_build
+  when: fleet_build|bool
 
-- include: deploy_unit.yml
-  tags: deploy_unit
-  when: fleet_unit_files is defined
+- include: install.yml
+  tags: fleet_install
+  when: fleet_install|bool
