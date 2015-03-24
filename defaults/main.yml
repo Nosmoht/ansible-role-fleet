@@ -16,6 +16,7 @@ fleet_install_path: /usr/local/bin
 fleet_install_binary_owner: '{{ lookup(''env'', ''USER'') }}'
 fleet_install_binary_group: '{{ lookup(''env'', ''USER'') }}'
 fleet_install_binary_mode: '0755'
+fleet_install_sudo: false
 fleet_protocol: http
 fleet_endpoint: 127.0.0.1
 fleet_port: 4001
