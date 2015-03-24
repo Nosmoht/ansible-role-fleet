@@ -34,14 +34,14 @@ The process of checking out and building Fleet binaries can be delegated to a re
 | fleet_install_binary_owner | String to define the binary owner | root |
 | fleet_install_binary_group | String to define the binary group | root |
 | fleet_install_binary_mode | String to define the binary mode | '0755' |
+| fleet_install_sudo | Boolean to define if binary installation has to be done with sudo. Set to true if installing binaries into a directory which is owned by root (like /usr/bin) | false |
 
-Dependencies
-------------
+# Dependencies
+None
 
-Example Playbook
-----------------
+# Example Playbook
 
-Checkout, build and install Fleet binaries and local system.
+Checkout, build and install Fleet binaries and local system using default values.
 
     - hosts: 127.0.0.1
       roles:
@@ -49,7 +49,7 @@ Checkout, build and install Fleet binaries and local system.
         fleet_build: true
         fleet_install: true
 
-Checkout, build Fleet binaries on remote system build-host.example.com and install binaries on local system.
+Checkout, build Fleet binaries on remote system build-host.example.com and install binaries on local system into /usr/bin.
 
     - hosts: 127.0.0.1
       roles:
@@ -57,6 +57,8 @@ Checkout, build Fleet binaries on remote system build-host.example.com and insta
         fleet_build: true
         fleet_build_host: build-host.example.com
         fleet_install: true
+        fleet_install_path: /usr/bin
+        fleet_install_sudo: true
 
 License
 -------
