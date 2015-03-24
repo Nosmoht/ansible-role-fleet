@@ -28,11 +28,11 @@
     src: '{{ fleet_fleet_binary_file }}'
     path: '{{ fleet_install_symlink_path }}/{{ fleet_fleet_binary_file_name }}'
     state: link
-  when: fleet_install_create_symlink and '{{ ansible_system }}' == 'Linux'
+  when: fleet_install_create_symlink|bool and '{{ ansible_system }}' == 'Linux'
 
 - name: Ensure symlink to fleetctl binary
   file:
     src: '{{ fleet_fleetctl_binary_file }}'
     path: '{{ fleet_install_symlink_path }}/{{ fleet_fleetctl_binary_file_name }}'
     state: link
-  when: fleet_install_create_symlink
+  when: fleet_install_create_symlink|bool
