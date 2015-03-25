@@ -1,12 +1,10 @@
 ---
 - name: Ensure build directory exists
-  delegate_to: '{{ fleet_build_host }}'
   file:
     dest: '{{ fleet_build_path }}'
     state: directory
 
 - name: Checkout Git repo
-  delegate_to: '{{ fleet_build_host }}'
   git:
     repo: '{{ fleet_build_repo_url }}'
     dest: '{{ fleet_build_path }}'
@@ -15,13 +13,11 @@
   register: fleet_git_result
 
 - name: Check if binary is build already
-  delegate_to: '{{ fleet_build_host }}'
   stat:
     path: '{{ fleet_build_bin_path }}/{{ fleet_fleet_binary_file_name }}'
   register: fleet_binary_file
 
 - name: Build binaries
-  delegate_to: '{{ fleet_build_host }}'
   shell: '{{ fleet_build_path }}/build'
   args:
     chdir: '{{ fleet_build_path }}'

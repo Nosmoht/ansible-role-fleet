@@ -1,27 +1,15 @@
 ---
-- name: Fetch binaries from build host
-  connection: local
-  delegate_to: '{{ fleet_build_host }}'
-  fetch:
-    src: '{{ item }}'
-    dest: /tmp
-  with_items:
-  - '{{ fleet_fleet_binary_file }}'
-  - '{{ fleet_fleetctl_binary_file }}'
-
 - name: Ensure fleetd binary
-  sudo: '{{ fleet_install_sudo }}'
   copy:
-    src: '/tmp/{{ fleet_build_host }}/{{ fleet_fleet_binary_file }}'
+    src: '{{ fleet_build_bin_path }}/{{ fleet_fleet_binary_file_name }}'
     dest: '{{ fleet_install_path }}/{{ fleet_fleet_binary_file_name }}'
     mode: '{{ fleet_install_binary_mode }}'
     owner: '{{ fleet_install_binary_owner }}'
     group: '{{ fleet_install_binary_group }}'
 
 - name: Ensure fleetctl binary
-  sudo: '{{ fleet_install_sudo }}'
   copy:
-    src: '/tmp/{{ fleet_build_host }}/{{ fleet_fleetctl_binary_file }}'
+    src: '{{ fleet_build_bin_path }}/{{ fleet_fleetctl_binary_file_name }}'
     dest: '{{ fleet_install_path }}/{{ fleet_fleetctl_binary_file_name }}'
     mode: '{{ fleet_install_binary_mode }}'
     owner: '{{ fleet_install_binary_owner }}'

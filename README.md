@@ -4,14 +4,12 @@ ansible-role-fleet
 # Description
 
 The roles can be used to do the following tasks
-- Checkout and build Fleet binaries (fleetd and fleetctl) on local or remote system
+- Checkout and build Fleet binaries (fleetd and fleetctl)
 - Install Fleet binary files
-
-The process of checking out and building Fleet binaries can be delegated to a remote system called _build host_.
 
 # Requirements
 - Ansible >= 1.2
-- Git and Go must be installed on _build host_
+- Git and Go must be installed
 
 # Role Variables
 ## Build variables
@@ -22,9 +20,8 @@ The process of checking out and building Fleet binaries can be delegated to a re
 | fleet_build_repo_url | String to define the Git repo URL | https://github.com/coreos/fleet.git |
 | fleet_build_repo_update | Boolean to define if update should be checked out | false |
 | fleet_build_version_default | String which equals the Git tag to checkout by default | v0.9.1 |
-| fleet_build_host | String to define the host where build tasks will be delegated to | '{{ inventory_hostname }}' |
-| fleet_build_path | String to define a directory where the Git repository will be cloned into | '{{ lookup(''env'', ''HOME'') }}/fleet' |
-| fleet_build_bin_path | String to define the directory where binary files are stored | '{{ fleet_build_path}}/bin'
+| fleet_build_path | String to define a directory where the Git repository will be cloned into | $HOME/fleet |
+| fleet_build_bin_path | String to define the directory where binary files are stored | $HOME/fleet/bin'
 
 ## Install variables
 | Name | Description | Default value |
@@ -34,31 +31,36 @@ The process of checking out and building Fleet binaries can be delegated to a re
 | fleet_install_binary_owner | String to define the binary owner | root |
 | fleet_install_binary_group | String to define the binary group | root |
 | fleet_install_binary_mode | String to define the binary mode | '0755' |
-| fleet_install_sudo | Boolean to define if binary installation has to be done with sudo. Set to true if installing binaries into a directory which is owned by root (like /usr/bin) | false |
+
+## Fleet variables
+The following variables must be set using the role to submit, start, stop or destroy unit files
+| Name | Description | Default value |
+| :----- | :----- | :----- |
+| fleet_protocol | String to define if http or https should be used | http |
+| fleet_endpoint | String to define the Fleet node to connect to | 127.0.0.1 |
+| fleet_port | Number to define the port to be used to connect to | 4001 |
 
 # Dependencies
 None
 
 # Example Playbook
 
-Checkout, build and install Fleet binaries and local system using default values.
+Checkout Fleet into $HOME/fleet and build binaries.
+```
+- hosts: 127.0.0.1
+  roles:
+  - role: fleet
+    fleet_build: true
+```
 
-    - hosts: 127.0.0.1
-      roles:
-      - role: fleet
-        fleet_build: true
-        fleet_install: true
-
-Checkout, build Fleet binaries on remote system build-host.example.com and install binaries on local system into /usr/bin.
-
-    - hosts: 127.0.0.1
-      roles:
-      - role: fleet
-        fleet_build: true
-        fleet_build_host: build-host.example.com
-        fleet_install: true
-        fleet_install_path: /usr/bin
-        fleet_install_sudo: true
+Install the binaries builded above into /usr/local/bin
+```
+- hosts: 127.0.0.1
+  sudo: true
+  roles:
+  - role: fleet
+    fleet_install: true
+```
 
 License
 -------
