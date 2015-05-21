@@ -6,7 +6,7 @@ fleet_build_path: '{{ lookup(''env'', ''HOME'') }}/fleet'
 fleet_build_bin_path: '{{ fleet_build_path }}/bin'
 fleet_build_repo_url: https://github.com/coreos/fleet.git
 fleet_build_repo_update: false
-fleet_build_version_default: v0.9.1
+fleet_build_version_default: v0.10.1
 fleet_build_bin_path: '{{ fleet_build_path }}/bin'
 fleet_install: false
 fleet_install_path: /usr/local/bin
@@ -16,6 +16,7 @@ fleet_install_binary_mode: '0755'
 fleet_protocol: http
 fleet_endpoint: 127.0.0.1
 fleet_port: 4001
+fleet_bin_directory: '{{ fleet_install_path }}'
 fleet_environment:
   PATH: '{{ fleet_bin_directory }}:{{ ansible_env.PATH }}'
   FLEETCTL_ENDPOINT: '{{ fleet_protocol }}://{{ fleet_endpoint }}:{{ fleet_port }}'
