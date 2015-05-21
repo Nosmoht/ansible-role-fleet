@@ -16,7 +16,7 @@ fleet_install_binary_mode: '0755'
 fleet_protocol: http
 fleet_endpoint: 127.0.0.1
 fleet_port: 4001
-fleet_bin_directory: '{{ fleet_install_path }}'
+fleet_bin_path: '{{ fleet_install_path }}'
 fleet_environment:
-  PATH: '{{ fleet_bin_directory }}:{{ ansible_env.PATH }}'
+  PATH: '{{ fleet_bin_path }}:{{ ansible_env.PATH }}'
   FLEETCTL_ENDPOINT: '{{ fleet_protocol }}://{{ fleet_endpoint }}:{{ fleet_port }}'
