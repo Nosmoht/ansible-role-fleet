@@ -6,6 +6,7 @@ ansible-role-fleet
 - [Requirements](#requirements)
 - [Role variables](#role variables)
 - [Dependencies](#dependencies)
+- [Examples](#examples)
 - [License](#license)
 - [Author information](#author information)
 
@@ -58,7 +59,7 @@ The following variables must be set using the role to submit, start, stop or des
 
 None
 
-# Example Playbook
+# Examples
 
 Checkout Fleet into $HOME/fleet and build binaries.
 ```yaml
