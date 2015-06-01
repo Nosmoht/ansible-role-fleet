@@ -1,8 +1,4 @@
 ---
-- include: build.yml
-  tags: fleet_build
-  when: fleet_build|bool
-
 - include: install.yml
   tags: fleet_install
   when: fleet_install|bool
