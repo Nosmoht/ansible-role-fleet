@@ -1,16 +1,21 @@
 ---
-- name: Ensure fleetd binary
-  copy:
-    src: '{{ fleet_build_bin_path }}/{{ fleet_fleet_binary_file_name }}'
-    dest: '{{ fleet_install_path }}/{{ fleet_fleet_binary_file_name }}'
-    mode: '{{ fleet_install_binary_mode }}'
-    owner: '{{ fleet_install_binary_owner }}'
-    group: '{{ fleet_install_binary_group }}'
+- name: Download Fleet release file
+  get_url:
+    url: '{{ fleet_url }}/{{ fleet_version }}/{{ fleet_package_file }}'
+    dest: '{{ fleet_download_path }}'
 
-- name: Ensure fleetctl binary
+- name: Unarchive Fleet binaries
+  unarchive:
+    src: '{{ fleet_download_path }}/{{ fleet_package_file }}'
+    dest: '{{ fleet_download_path }}'
+
+- name: Copy unarchived binaries
   copy:
-    src: '{{ fleet_build_bin_path }}/{{ fleet_fleetctl_binary_file_name }}'
-    dest: '{{ fleet_install_path }}/{{ fleet_fleetctl_binary_file_name }}'
-    mode: '{{ fleet_install_binary_mode }}'
-    owner: '{{ fleet_install_binary_owner }}'
-    group: '{{ fleet_install_binary_group }}'
+    src: '{{ fleet_download_path }}/{{ fleet_package_name }}/{{ item }}'
+    dest: '{{ fleet_install_path }}'
+    mode: '{{ fleet_install_mode }}'
+    owner: '{{ fleet_install_owner }}'
+    group: '{{ fleet_install_group }}'
+  with_items:
+  - '{{ fleet_fleet_binary_file_name }}'
+  - '{{ fleet_fleetctl_binary_file_name }}'
